@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='UTF*8'>
+    <title>Calculator</title>
+    <style>
+        
+        body {
+            background-color: #281cca52;
+
+        }
+
+        #grid-container {
+            justify-content: center;
+            margin-top: 100px;
+            height: 400px;
+            width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+
+
+        }
+
+        #display {
+            background-color: #DEE5ED;
+            text-align: right;
+            padding-top: 19px;
+            font-size: 30px;
+            
+        }
+
+        .digit, .grid-element {
+            border: 0px;
+            margin: 2px;
+        }
+
+        .grid-element {
+            background-color: #506C8B;
+            background-color: rgb(43, 177, 25);
+        }
+
+        .operator,#clear,#result {
+            background-color: orangered;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style= 'text-align:center; margin-top:40px; color:orange ' >Calculator made by urbanassa</h1>
+    <div id='grid-container'>
+        <div id='display' class='grid-element'>0</div>
+        <div id='digits' style='display:grid'>
+            <button class='digit'>1</button>
+            <button class='digit'>2</button>
+            <button class='digit'>3</button>
+            <button class='digit'>4</button>
+            <button class='digit'>5</button>
+            <button class='digit'>6</button>
+            <button class='digit'>7</button>
+            <button class='digit'>8</button>
+            <button class='digit'>9</button>
+        </div>
+        <button class='grid-element operator orange'>+</button>
+        <button class='grid-element operator orange'>-</button>
+        <button class='grid-element operator orange'>*</button>
+        <button id='clear' class='grid-element orange'>C</button>
+        <button class='digit grid-element'>0</button>
+        <button id='result' class='grid-element orange'>=</button>
+        <button class='grid-element operator orange'>/</button>
+    </div>
+    <audio src="boom.wav"></audio>
+
+    <script>
+        let variantArr = [];
+        let displayOperator = [];
+        let isResult = false;
+        const body = document.querySelector('body');
+        const digits = document.querySelector('#digits');
+        const digitArr = document.querySelectorAll('.digit');
+        const result = document.querySelector('#result');
+        const display = document.querySelector('#display');
+
+        const container = document.querySelector('#grid-container');
+        display.style = 'border: 2px solid #DEE5ED;';
+        container.style = ' display: grid; border:6px solid orange; grid-template-columns: repeat(4,80px); grid-template-rows: repeat(5,80px);';
+        const gridElements = document.querySelectorAll('.grid-element');
+        document.querySelector('#display').style.gridColumn = '1 /span 4';
+        digits.style.gridColumn = '1 / 4';
+        digits.style.gridRow = '2 / 5'
+        digits.style.gridTemplateColumns = ' 80px 80px 80px';
+        digitArr.forEach((element) => element.style = 'background-color: rgb(43, 177, 25); text-align:center;');
+        result.style.gridTemplateColumns = '3 / 4';
+        result.style.gridTemplateRows = '4 / 5';
+        digitArr.forEach((button) => button.addEventListener('click', (e) => {
+            const audio = document.querySelector('audio');
+            audio.currentTime = 0;
+            audio.play();
+            if ((display.textContent == '0') || (isResult == true)) {
+                display.textContent = e.target.textContent;
+                isResult = false;
+            }
+            else {
+                display.textContent += e.target.textContent;
+                isResult = false;
+            }
+        }));
+        document.querySelectorAll('.operator').forEach((button) => button.addEventListener('click', (e) => {
+            const audio = document.querySelector('audio');
+            audio.currentTime = 0;
+            audio.play();
+            let index = 0;
+            while (!(variantArr[index] == undefined)) {
+                index++;
+            }
+            variantArr[index] = display.textContent;
+            /*if (variantArr[0] == undefined)
+                variantArr[0] = display.textContent;
+            else if (variantArr[1] == undefined)
+                variantArr[1] = display.textContent;
+            else
+                variantArr[0] = display.textContent;*/
+            display.textContent = '';
+            let index1 = 0;
+            while (!(displayOperator[index1] == undefined)) {
+                index1++;
+            }
+            console.log(e.target.textContent);
+            displayOperator[index1] = e.target.textContent;
+        }));
+        result.addEventListener('click', (e) => {
+            const audio = document.querySelector('audio');
+            audio.currentTime = 0;
+            audio.play();
+            let index = 0;
+            while (!(variantArr[index] == undefined)) {
+                index++;
+            }
+            variantArr[index] = display.textContent;
+            let index1 = 1;
+            let dispRes = operate(variantArr[0], variantArr[1], displayOperator[0]);
+            console.log(dispRes);
+            console.log(variantArr[0]);
+            console.log(variantArr[1]);
+            console.log(variantArr[2]);
+            while (!(variantArr[index1 + 1] == undefined)) {
+                dispRes = operate(dispRes, variantArr[index1 + 1], displayOperator[index1]);
+                index1++;
+            }
+            console.log(dispRes);
+            display.textContent = dispRes;
+            /*variantArr[1] =display.textContent;
+            display.textContent = operate(variantArr[0], variantArr[1], displayOperator);*/
+            variantArr.splice(0, variantArr.length);
+            displayOperator.splice(0, displayOperator.length);
+            isResult = true;
+            console.log(variantArr[0]);
+            console.log(isResult);
+        });
+        document.querySelector('#clear').addEventListener('click', (e) => {display.textContent = '0';
+        const audio = document.querySelector('audio');
+            audio.currentTime = 0;
+            audio.play();});
+
+        document.querySelectorAll('button').forEach((x) => x.addEventListener('mouseover',(e) => e.target.style.backgroundColor = 'rgb(189, 230, 176)' ));
+        document.querySelectorAll('.digit').forEach((x) => x.addEventListener('mouseout',(e) => e.target.style.backgroundColor = 'rgb(43, 177, 25)' ));
+        document.querySelectorAll('.orange').forEach((x) => x.addEventListener('mouseover',(e) => e.target.style.backgroundColor = 'rgb(226, 152, 126)'));
+        document.querySelectorAll('.orange').forEach((x) => x.addEventListener('mouseout',(e) => e.target.style.backgroundColor = 'orangered'));
+
+        
+
+
+        const add = (x, y) => x + y    //from now on function declarations
+        const subtract = (x, y) => x - y
+        const multiply = (x, y) => x * y
+        const divide = (x, y) => x / y
+
+        function operate(num1, num2, operatorInp) {
+            num1 = Number(num1);
+            num2 = Number(num2);
+            if (operatorInp == '+')
+                return add(num1, num2);
+            else if (operatorInp == '-')
+                return subtract(num1, num2);
+            else if (operatorInp == '*')
+                return multiply(num1, num2);
+            else if (operatorInp == '/')
+                return divide(num1, num2);
+            else {
+                alert('Please enter valid operator(+,-,*,/)');
+                return operate;
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>
